@@ -17,7 +17,7 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     PlayerJob = JobInfo
 end)
 
-RegisterNetEvent('qb-bossmenu:client:inventario', function()
+RegisterNetEvent('qb-bossmenu:client:inventory', function()
     TriggerServerEvent("inventory:server:OpenInventory", "stash", "Inv_" .. PlayerJob.label, {
         maxweight = 4000000,
         slots = 100,
@@ -25,7 +25,7 @@ RegisterNetEvent('qb-bossmenu:client:inventario', function()
     TriggerEvent("inventory:client:SetCurrentStash", "Inv_" .. PlayerJob.label)
 end)
 
-RegisterNetEvent('qb-bossmenu:client:guardaroba', function()
+RegisterNetEvent('qb-bossmenu:client:wardrobe', function()
     TriggerEvent('qb-clothing:client:openOutfitMenu')
 end)
 
@@ -33,46 +33,46 @@ RegisterNetEvent('qb-bossmenu:client:mainmenu', function()
 	shownBossMenu = true
 	local bossMenu = {
 			{
-				header = "Menù Società - " ..string.upper(PlayerJob.label),
+				header = "Company menu - " ..string.upper(PlayerJob.label),
 				isMenuHeader = true,
 			},
 			{
-				header = "Gestisci Dipendenti",
-				txt = "Gestisci i tuoi dipendenti, puoi licenziarli o cambiargli il grado",
+				header = "Manage Employees",
+				txt = "Manage your employees, you can fire them or change their rank",
 				params = {
-					event = "qb-bossmenu:client:gestiscidipendenti",
+					event = "qb-bossmenu:client:manageemployees",
 				}
 			},
 			{
-				header = "Assumi Dipendenti",
-				txt = "Puoi assumere nella tua società i giocatori nei paraggi",
+				header = "Hire Employees",
+				txt = "You can hire nearby players in your club",
 				params = {
-					event = "qb-bossmenu:client:assumidipendenti",
+					event = "qb-bossmenu:client:hiredEmployees",
 				}
 			},
 			{
-				header = "Inventario",
-				txt = "Apri l'inventario della società",
+				header = "Inventory",
+				txt = "Open the company's inventory",
 				params = {
-					event = "qb-bossmenu:client:inventario",
+					event = "qb-bossmenu:client:inventory",
 				}
 			},
 			{
-				header = "Guardaroba",
-				txt = "Apri il tuo guardaroba",
+				header = "Wardrobe",
+				txt = "Open your wardrobe",
 				params = {
-					event = "qb-bossmenu:client:guardaroba",
+					event = "qb-bossmenu:client:wardrobe",
 				}
 			},
 			{
-				header = "Saldo Società",
-				txt = "Gestisci il saldo della società, puoi prelevare o depositare denaro",
+				header = "Company balance",
+				txt = "Manage the company's balance, you can withdraw or deposit money",
 				params = {
-					event = "qb-bossmenu:client:saldosocieta",
+					event = "qb-bossmenu:client:firmcompany",
 				}
 			},
 			{
-				header = "Chiudi",
+				header = "Close",
 				params = {
 					event = "qb-menu:closeMenu",
 				}
@@ -81,10 +81,10 @@ RegisterNetEvent('qb-bossmenu:client:mainmenu', function()
 	exports['qb-menu']:openMenu(bossMenu)
 end)
 
-RegisterNetEvent('qb-bossmenu:client:gestiscidipendenti', function()
+RegisterNetEvent('qb-bossmenu:client:manageemployees', function()
 	local dipendentiMenu = {
 		{
-			header = "Gestisci dipendenti - " ..string.upper(PlayerJob.label),
+			header = "Manage employees - " ..string.upper(PlayerJob.label),
 			isMenuHeader = true,
 		},
 	}
@@ -94,7 +94,7 @@ RegisterNetEvent('qb-bossmenu:client:gestiscidipendenti', function()
 				header = v.name,
 				txt = v.grade.name,
 				params = {
-					event = "qb-bossmenu:client:gestiscidipendente",
+					event = "qb-bossmenu:client:manageemployee",
 					args = {
 						giocatore = v,
 						lavoro = PlayerJob
@@ -103,7 +103,7 @@ RegisterNetEvent('qb-bossmenu:client:gestiscidipendenti', function()
 			}
         end
 		dipendentiMenu[#dipendentiMenu+1] = {
-			header = "< Indietro",
+			header = "< Back",
 			params = {
 				event = "qb-bossmenu:client:mainmenu",
 			}
@@ -112,20 +112,20 @@ RegisterNetEvent('qb-bossmenu:client:gestiscidipendenti', function()
     end, PlayerJob.name)
 end)
 
-RegisterNetEvent('qb-bossmenu:client:gestiscidipendente', function(data)
+RegisterNetEvent('qb-bossmenu:client:manageemployee', function(data)
 	local dipendenteMenu = {
 		{
-			header = "Gestisci " ..data.giocatore.name.. " - " ..string.upper(PlayerJob.label),
+			header = "Manage" ..data.giocatore.name.. " - " ..string.upper(PlayerJob.label),
 			isMenuHeader = true,
 		},
 	}
 	for k, v in pairs(QBCore.Shared.Jobs[data.lavoro.name].grades) do
 		dipendenteMenu[#dipendenteMenu+1] = {
 			header = v.name,
-			txt = "Grado: " ..k,
+			txt = "Degree: " ..k,
 			params = {
 				isServer = true,
-				event = "qb-bossmenu:server:aggiornaGrado",
+				event = "qb-bossmenu:server:updateGrade",
 				args = {
 					cid = data.giocatore.empSource,
 					grado = tonumber(k),
@@ -135,78 +135,78 @@ RegisterNetEvent('qb-bossmenu:client:gestiscidipendente', function(data)
 		}
 	end
 	dipendenteMenu[#dipendenteMenu+1] = {
-		header = "Licenzia",
+		header = "Fire",
 		params = {
 			isServer = true,
-			event = "qb-bossmenu:server:licenziaGiocatore",
+			event = "qb-bossmenu:server:firedPlayer",
 			args = data.giocatore.empSource
 		}
 	}
 	dipendenteMenu[#dipendenteMenu+1] = {
-		header = "< Indietro",
+		header = "< Back",
 		params = {
-			event = "qb-bossmenu:client:gestiscidipendenti",
+			event = "qb-bossmenu:client:manageemployees",
 		}
 	}
 	exports['qb-menu']:openMenu(dipendenteMenu)
 end)
 
-RegisterNetEvent('qb-bossmenu:client:assumidipendenti', function()
-	local assumidipendentiMenu = {
+RegisterNetEvent('qb-bossmenu:client:hiredEmployees', function()
+	local hiredEmployeesMenu = {
 		{
-			header = "Assumi dipendenti - " ..string.upper(PlayerJob.label),
+			header = "Hire employeei - " ..string.upper(PlayerJob.label),
 			isMenuHeader = true,
 		},
 	}
 	QBCore.Functions.TriggerCallback('qb-bossmenu:getplayers', function(players)
 		for k,v in pairs(players) do
 			if v and v ~= PlayerId() then
-				assumidipendentiMenu[#assumidipendentiMenu+1] = {
+				hiredEmployeesMenu[#hiredEmployeesMenu+1] = {
 					header = v.name,
 					txt = "CID: " ..v.citizenid.. " - ID: " ..v.sourceplayer,
 					params = {
 						isServer = true,
-						event = "qb-bossmenu:server:reclutaGiocatore",
+						event = "qb-bossmenu:server:recruitPlayer",
 						args = v.sourceplayer
 					}
 				}
 			end
 		end
-		assumidipendentiMenu[#assumidipendentiMenu+1] = {
-			header = "< Indietro",
+		hiredEmployeesMenu[#hiredEmployeesMenu+1] = {
+			header = "< Back",
 			params = {
 				event = "qb-bossmenu:client:mainmenu",
 			}
 		}
-		exports['qb-menu']:openMenu(assumidipendentiMenu)
+		exports['qb-menu']:openMenu(hiredEmployeesMenu)
 	end)
 end)
 
-RegisterNetEvent('qb-bossmenu:client:saldosocieta', function()
+RegisterNetEvent('qb-bossmenu:client:firmcompany', function()
 	QBCore.Functions.TriggerCallback('qb-bossmenu:server:GetAccount', function(cb)	
 	local menuSaldosocieta = {
 		{
-			header = "Saldo: $" .. comma_value(cb) .. " - "..string.upper(PlayerJob.label),
+			header = "Balance: £" .. comma_value(cb) .. " - "..string.upper(PlayerJob.label),
 			isMenuHeader = true,
 		},
 		{
 			header = "Deposita",
-			txt = "Deposita denaro nella cassaforte della tua società",
+			txt = "Deposit money in your company's safe",
 			params = {
-				event = "qb-bossmenu:client:depositadenaro",
+				event = "qb-bossmenu:client:depositmoney",
 				args = comma_value(cb)
 			}
 		},
 		{
-			header = "Preleva",
-			txt = "Preleva denaro dalla cassaforte della tua società",
+			header = "Withdraw",
+			txt = "Withdraw money from your company vault",
 			params = {
-				event = "qb-bossmenu:client:prelevadenaro",
+				event = "qb-bossmenu:client:withdrawmoney",
 				args = comma_value(cb)
 			}
 		},
 		{
-			header = "< Indietro",
+			header = "< Back",
 			params = {
 				event = "qb-bossmenu:client:mainmenu",
 			}
@@ -216,41 +216,41 @@ RegisterNetEvent('qb-bossmenu:client:saldosocieta', function()
 	end, PlayerJob.name)
 end)
 
-RegisterNetEvent('qb-bossmenu:client:depositadenaro', function(saldoattuale)
-	local depositadenaro = exports['qb-input']:ShowInput({
-		header = "Deposita Denaro <br> Saldo Attuale: $" ..saldoattuale,
+RegisterNetEvent('qb-bossmenu:client:depositmoney', function(saldoattuale)
+	local depositmoney = exports['qb-input']:ShowInput({
+		header = "Deposit Money With Current Balance: £" ..saldoattuale,
 		submitText = "Conferma",
 		inputs = {
 			{
 				type = 'number',
 				isRequired = true,
 				name = 'amount',
-				text = '$'
+				text = '£'
 			}
 		}
 	})
-	if depositadenaro then
-		if not depositadenaro.amount then return end
-		TriggerServerEvent("qb-bossmenu:server:depositMoney", tonumber(depositadenaro.amount))
+	if depositmoney then
+		if not depositmoney.amount then return end
+		TriggerServerEvent("qb-bossmenu:server:depositMoney", tonumber(depositmoney.amount))
 	end
 end)
 
-RegisterNetEvent('qb-bossmenu:client:prelevadenaro', function(saldoattuale)
-	local prelevadenaro = exports['qb-input']:ShowInput({
-		header = "Preleva Denaro <br> Saldo Attuale: $" ..saldoattuale,
+RegisterNetEvent('qb-bossmenu:client:withdrawmoney', function(saldoattuale)
+	local withdrawmoney = exports['qb-input']:ShowInput({
+		header = "Withdraw Money With Current Balance: £" ..saldoattuale,
 		submitText = "Conferma",
 		inputs = {
 			{
 				type = 'number',
 				isRequired = true,
 				name = 'amount',
-				text = '$'
+				text = '"£"'
 			}
 		}
 	})
-	if prelevadenaro then
-		if not prelevadenaro.amount then return end
-		TriggerServerEvent("qb-bossmenu:server:withdrawMoney", tonumber(prelevadenaro.amount))
+	if withdrawmoney then
+		if not withdrawmoney.amount then return end
+		TriggerServerEvent("qb-bossmenu:server:withdrawMoney", tonumber(withdrawmoney.amount))
 	end
 end)
 
@@ -265,7 +265,7 @@ CreateThread(function()
 				if #(pos - v) < 5.0 then
 					inRangeBoss = true
 						if #(pos - v) <= 1.5 then
-							if not shownBossMenu then DrawText3D(v, "~b~E~w~ - Menù Attività") end
+							if not shownBossMenu then DrawText3D(v, "~b~E~w~ - Menu") end
 							nearBossmenu = true
 							if IsControlJustReleased(0, 38) then
 								TriggerEvent("qb-bossmenu:client:mainmenu")
