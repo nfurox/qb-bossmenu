@@ -17,7 +17,7 @@ RegisterNetEvent('QBCore:Client:OnGangUpdate', function(InfoGang)
     PlayerGang = InfoGang
 end)
 
-RegisterNetEvent('qb-gangmenu:client:inventario', function()
+RegisterNetEvent('qb-gangmenu:client:inventory', function()
     TriggerServerEvent("inventory:server:OpenInventory", "stash", "Inv_" .. PlayerGang.label, {
         maxweight = 5000000,
         slots = 100,
@@ -25,7 +25,7 @@ RegisterNetEvent('qb-gangmenu:client:inventario', function()
     TriggerEvent("inventory:client:SetCurrentStash", "Inv_" .. PlayerGang.label)
 end)
 
-RegisterNetEvent('qb-gangmenu:client:guardaroba', function()
+RegisterNetEvent('qb-gangmenu:client:wardrobe', function()
     TriggerEvent('qb-clothing:client:openOutfitMenu')
 end)
 
@@ -33,46 +33,46 @@ RegisterNetEvent('qb-gangmenu:client:mainmenu', function()
 	shownGangMenu = true
 	local gangMenu = {
 			{
-				header = "Menù Fazione - " ..string.upper(PlayerGang.label),
+				header = "Faction menu - " ..string.upper(PlayerGang.label),
 				isMenuHeader = true,
 			},
 			{
-				header = "Gestisci Affiliati",
-				txt = "Gestisci i tuoi affiliati, puoi farli fuori o cambiargli il grado",
+				header = "Manage Affiliates",
+				txt = "Manage your affiliates, you can change their rank here",
 				params = {
-					event = "qb-gangmenu:client:gestiscidipendenti",
+					event = "qb-gangmenu:client:manageemployees",
 				}
 			},
 			{
-				header = "Assumi Affiliati",
-				txt = "Puoi affiliare i giocatori nei paraggi",
+				header = "Hire Affiliates",
+				txt = "You can affiliate players nearby",
 				params = {
-					event = "qb-gangmenu:client:assumidipendenti",
+					event = "qb-gangmenu:client:hiredEmployees",
 				}
 			},
 			{
-				header = "Inventario",
-				txt = "Apri l'inventario della fazione",
+				header = "Inventory",
+				txt = "Open the Faction Inventory",
 				params = {
-					event = "qb-gangmenu:client:inventario",
+					event = "qb-gangmenu:client:inventory",
 				}
 			},
 			{
-				header = "Guardaroba",
-				txt = "Apri il tuo guardaroba",
+				header = "Wardrobe",
+				txt = "Open your wardrobe",
 				params = {
-					event = "qb-gangmenu:client:guardaroba",
+					event = "qb-gangmenu:client:wardrobe",
 				}
 			},
 			{
-				header = "Saldo Fazione",
-				txt = "Gestisci il saldo della fazione, puoi prelevare o depositare denaro",
+				header = "Faction balance",
+				txt = "Manage the balance of the faction, you can withdraw or deposit money",
 				params = {
-					event = "qb-gangmenu:client:saldosocieta",
+					event = "qb-gangmenu:client:firmcompany",
 				}
 			},
 			{
-				header = "Chiudi",
+				header = "Close",
 				params = {
 					event = "qb-menu:closeMenu",
 				}
@@ -81,7 +81,7 @@ RegisterNetEvent('qb-gangmenu:client:mainmenu', function()
 	exports['qb-menu']:openMenu(gangMenu)
 end)
 
-RegisterNetEvent('qb-gangmenu:client:gestiscidipendenti', function()
+RegisterNetEvent('qb-gangmenu:client:manageemployees', function()
 	local dipendentiMenuGang = {
 		{
 			header = "Gestisci Affiliati - " ..string.upper(PlayerGang.label),
@@ -94,7 +94,7 @@ RegisterNetEvent('qb-gangmenu:client:gestiscidipendenti', function()
 				header = v.name,
 				txt = v.grade.name,
 				params = {
-					event = "qb-gangmenu:client:gestiscidipendente",
+					event = "qb-gangmenu:client:manageemployee",
 					args = {
 						giocatore = v,
 						lavoro = PlayerGang
@@ -103,7 +103,7 @@ RegisterNetEvent('qb-gangmenu:client:gestiscidipendenti', function()
 			}
         end
 		dipendentiMenuGang[#dipendentiMenuGang+1] = {
-			header = "< Indietro",
+			header = "< Back",
 			params = {
 				event = "qb-gangmenu:client:mainmenu",
 			}
@@ -112,20 +112,20 @@ RegisterNetEvent('qb-gangmenu:client:gestiscidipendenti', function()
     end, PlayerGang.name)
 end)
 
-RegisterNetEvent('qb-gangmenu:client:gestiscidipendente', function(data)
+RegisterNetEvent('qb-gangmenu:client:manageemployee', function(data)
 	local dipendenteMenuGang = {
 		{
-			header = "Gestisci " ..data.giocatore.name.. " - " ..string.upper(PlayerGang.label),
+			header = "Manage " ..data.giocatore.name.. " - " ..string.upper(PlayerGang.label),
 			isMenuHeader = true,
 		},
 	}
 	for k, v in pairs(QBCore.Shared.Gangs[data.lavoro.name].grades) do
 		dipendenteMenuGang[#dipendenteMenuGang+1] = {
 			header = v.name,
-			txt = "Grado: " ..k,
+			txt = "Degree: " ..k,
 			params = {
 				isServer = true,
-				event = "qb-gangmenu:server:aggiornaGrado",
+				event = "qb-gangmenu:server:updateGrade",
 				args = {
 					cid = data.giocatore.empSource,
 					grado = tonumber(k),
@@ -135,78 +135,78 @@ RegisterNetEvent('qb-gangmenu:client:gestiscidipendente', function(data)
 		}
 	end
 	dipendenteMenuGang[#dipendenteMenuGang+1] = {
-		header = "Butta fuori",
+		header = "Throw out",
 		params = {
 			isServer = true,
-			event = "qb-gangmenu:server:licenziaGiocatore",
+			event = "qb-gangmenu:server:firedPlayer",
 			args = data.giocatore.empSource
 		}
 	}
 	dipendenteMenuGang[#dipendenteMenuGang+1] = {
-		header = "< Indietro",
+		header = "< Back",
 		params = {
-			event = "qb-gangmenu:client:gestiscidipendenti",
+			event = "qb-gangmenu:client:manageemployees",
 		}
 	}
 	exports['qb-menu']:openMenu(dipendenteMenuGang)
 end)
 
-RegisterNetEvent('qb-gangmenu:client:assumidipendenti', function()
-	local assumidipendentiMenuGang = {
+RegisterNetEvent('qb-gangmenu:client:hiredEmployees', function()
+	local hiredEmployeesMenuGang = {
 		{
-			header = "Assumi dipendenti - " ..string.upper(PlayerGang.label),
+			header = "Hire employees - " ..string.upper(PlayerGang.label),
 			isMenuHeader = true,
 		},
 	}
 	QBCore.Functions.TriggerCallback('qb-gangmenu:getplayers', function(players)
 		for k,v in pairs(players) do
 			if v and v ~= PlayerId() then
-				assumidipendentiMenuGang[#assumidipendentiMenuGang+1] = {
+				hiredEmployeesMenuGang[#hiredEmployeesMenuGang+1] = {
 					header = v.name,
 					txt = "CID: " ..v.citizenid.. " - ID: " ..v.sourceplayer,
 					params = {
 						isServer = true,
-						event = "qb-gangmenu:server:reclutaGiocatore",
+						event = "qb-gangmenu:server:recruitPlayer",
 						args = v.sourceplayer
 					}
 				}
 			end
 		end
-		assumidipendentiMenuGang[#assumidipendentiMenuGang+1] = {
-			header = "< Indietro",
+		hiredEmployeesMenuGang[#hiredEmployeesMenuGang+1] = {
+			header = "< Back",
 			params = {
 				event = "qb-gangmenu:client:mainmenu",
 			}
 		}
-		exports['qb-menu']:openMenu(assumidipendentiMenuGang)
+		exports['qb-menu']:openMenu(hiredEmployeesMenuGang)
 	end)
 end)
 
-RegisterNetEvent('qb-gangmenu:client:saldosocieta', function()
+RegisterNetEvent('qb-gangmenu:client:firmcompany', function()
 	QBCore.Functions.TriggerCallback('qb-gangmenu:server:GetAccount', function(cb)	
 	local menuSaldosocieta = {
 		{
-			header = "Saldo: $" .. comma_valueGang(cb) .. " - "..string.upper(PlayerGang.label),
+			header = "Balance: £" .. comma_valueGang(cb) .. " - "..string.upper(PlayerGang.label),
 			isMenuHeader = true,
 		},
 		{
-			header = "Deposita",
-			txt = "Deposita denaro nella cassaforte della tua fazione",
+			header = "Deposit",
+			txt = "Deposit money in your faction's safe",
 			params = {
-				event = "qb-gangmenu:client:depositadenaro",
+				event = "qb-gangmenu:client:depositmoney",
 				args = comma_valueGang(cb)
 			}
 		},
 		{
-			header = "Preleva",
-			txt = "Preleva denaro dalla cassaforte della tua fazione",
+			header = "Withdraw",
+			txt = "Withdraw money from your faction's safe",
 			params = {
-				event = "qb-gangmenu:client:prelevadenaro",
+				event = "qb-gangmenu:client:withdrawmoney",
 				args = comma_valueGang(cb)
 			}
 		},
 		{
-			header = "< Indietro",
+			header = "< Back",
 			params = {
 				event = "qb-gangmenu:client:mainmenu",
 			}
@@ -216,41 +216,41 @@ RegisterNetEvent('qb-gangmenu:client:saldosocieta', function()
 	end, PlayerGang.name)
 end)
 
-RegisterNetEvent('qb-gangmenu:client:depositadenaro', function(saldoattuale)
-	local depositadenaro = exports['qb-input']:ShowInput({
-		header = "Deposita Denaro <br> Saldo Attuale: $" ..saldoattuale,
-		submitText = "Conferma",
+RegisterNetEvent('qb-gangmenu:client:depositmoney', function(saldoattuale)
+	local depositmoney = exports['qb-input']:ShowInput({
+		header = "Deposit Money With Current Balance: £" ..saldoattuale,
+		submitText = "Confirmation",
 		inputs = {
 			{
 				type = 'number',
 				isRequired = true,
 				name = 'amount',
-				text = '$'
+				text = '£'
 			}
 		}
 	})
-	if depositadenaro then
-		if not depositadenaro.amount then return end
-		TriggerServerEvent("qb-gangmenu:server:depositMoney", tonumber(depositadenaro.amount))
+	if depositmoney then
+		if not depositmoney.amount then return end
+		TriggerServerEvent("qb-gangmenu:server:depositMoney", tonumber(depositmoney.amount))
 	end
 end)
 
-RegisterNetEvent('qb-gangmenu:client:prelevadenaro', function(saldoattuale)
-	local prelevadenaro = exports['qb-input']:ShowInput({
-		header = "Preleva Denaro <br> Saldo Attuale: $" ..saldoattuale,
-		submitText = "Conferma",
+RegisterNetEvent('qb-gangmenu:client:withdrawmoney', function(saldoattuale)
+	local withdrawmoney = exports['qb-input']:ShowInput({
+		header = "Withdraw Money With Current Balance: £" ..saldoattuale,
+		submitText = "Confirmation",
 		inputs = {
 			{
 				type = 'number',
 				isRequired = true,
 				name = 'amount',
-				text = '$'
+				text = '£'
 			}
 		}
 	})
-	if prelevadenaro then
-		if not prelevadenaro.amount then return end
-		TriggerServerEvent("qb-gangmenu:server:withdrawMoney", tonumber(prelevadenaro.amount))
+	if withdrawmoney then
+		if not withdrawmoney.amount then return end
+		TriggerServerEvent("qb-gangmenu:server:withdrawMoney", tonumber(withdrawmoney.amount))
 	end
 end)
 
@@ -265,7 +265,7 @@ CreateThread(function()
 				if #(pos - v) < 5.0 then
 					inRangeGang = true
 						if #(pos - v) <= 1.5 then
-							if not shownGangMenu then DrawText3DGang(v, "~b~E~w~ - Menu Fazione") end
+							if not shownGangMenu then DrawText3DGang(v, "~b~E~w~ - Open Menu") end
 							nearGangmenu = true
 							if IsControlJustReleased(0, 38) then
 								TriggerEvent("qb-gangmenu:client:mainmenu")
