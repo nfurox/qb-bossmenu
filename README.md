@@ -1,3 +1,8 @@
+# I Just Translated This It Is Not My Work
+
+# Credit To https://github.com/Enzo-DC/qb-bossmenu
+
+
 # qb-bossmenu
 New bossmenu converted to qb-menu and qb-input.
 qb-bossmenu and qb-gangmenu converted to qb-menu, merged into a single resource, and saves the account in the database.
